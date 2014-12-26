@@ -2,7 +2,6 @@ require 'net/http'
 require 'uri'
 require 'json'
 
-
 uri = URI('https://api.github.com/emojis')
 
 response = Net::HTTP.start(uri.host, uri.port,
