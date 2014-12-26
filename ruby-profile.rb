@@ -1,6 +1,7 @@
 require 'net/http'
 require 'uri'
 require 'json'
+require 'ostruct'
 
 module Util
   def self.get_response(endpoint)
@@ -19,12 +20,12 @@ module Util
 end
 
 module View
-  def self.display_profile(name, location, num_public_repo, public_repos)
-    puts "Name: #{name}"
-    puts "Location: #{location}"
-    puts "Public Repos: #{num_public_repo}"
+  def self.display_profile(profile, public_repos)
+    puts "Name: #{profile.name}"
+    puts "Location: #{profile.location}"
+    puts "Public Repos: #{profile.public_repos}"
     public_repos.each do |repo|
-      puts "    *  #{repo["name"]} (#{repo["watchers"]} watchers)"
+      puts "    *  #{repo.name} (#{repo.watchers} watchers)"
     end
   end
 end
@@ -35,15 +36,12 @@ class User
 
   def initialize(username)
     @username = username
-    @profile = Util.get_response("users/#{@username}")
-    @public_repos = Util.get_response("users/#{@username}/repos").sort_by { |repo| repo["watchers"].to_i }.reverse
+    @profile = OpenStruct.new(Util.get_response("users/#{@username}"))
+    @public_repos = Util.get_response("users/#{@username}/repos").sort_by { |repo| repo["watchers"].to_i }.reverse.map { |repo| OpenStruct.new repo }
   end
 
   def view_profile
-    name = @profile["name"]
-    location = @profile["location"]
-    num_public_repo = @profile["public_repos"]
-    View.display_profile(name, location, num_public_repo, @public_repos)
+    View.display_profile(@profile, @public_repos)
   end
 end
 
