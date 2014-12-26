@@ -36,9 +36,7 @@ class User
   def initialize(username)
     @username = username
     @profile = Util.get_response("users/#{@username}")
-    @public_repos = Util.get_response("users/#{@username}/repos").sort do |repo1, repo2|
-      repo2["watchers"].to_i <=> repo1["watchers"].to_i
-    end
+    @public_repos = Util.get_response("users/#{@username}/repos").sort_by { |repo| repo["watchers"].to_i }.reverse
   end
 
   def view_profile
