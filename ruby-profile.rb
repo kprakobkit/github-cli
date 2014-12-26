@@ -19,10 +19,13 @@ module Util
 end
 
 module View
-  def self.display_profile(name, location, public_repo)
+  def self.display_profile(name, location, num_public_repo, public_repos)
     puts "Name: #{name}"
     puts "Location: #{location}"
-    puts "Public Repos: #{public_repo}"
+    puts "Public Repos: #{num_public_repo}"
+    public_repos.each do |repo|
+      puts "    *  #{repo["name"]} (#{repo["watchers"]} watchers)"
+    end
   end
 end
 
@@ -33,20 +36,18 @@ class User
   def initialize(username)
     @username = username
     @profile = Util.get_response("users/#{@username}")
-  end
-
-  def list_repos
+    @public_repos = Util.get_response("users/#{@username}/repos").sort do |repo1, repo2|
+      repo2["watchers"].to_i <=> repo1["watchers"].to_i
+    end
   end
 
   def view_profile
     name = @profile["name"]
     location = @profile["location"]
-    public_repo = @profile["public_repos"]
-    View.display_profile(name, location, public_repo)
+    num_public_repo = @profile["public_repos"]
+    View.display_profile(name, location, num_public_repo, @public_repos)
   end
 end
 
 user = User.new(ARGV[0])
 user.view_profile
-
-
