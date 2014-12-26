@@ -1,6 +1,6 @@
 require_relative 'util'
-require_relative 'view'
 require_relative 'user'
+require_relative 'view'
 
 module App
   def self.run(username)

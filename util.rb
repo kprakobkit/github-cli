@@ -1,6 +1,6 @@
+require 'json'
 require 'net/http'
 require 'uri'
-require 'json'
 
 module Util
   def self.get_response(endpoint)
