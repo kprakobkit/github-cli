@@ -1,17 +1,26 @@
 require 'ostruct'
+require_relative 'util'
 
 class User
-  include Util
-  attr_reader :profile
+  attr_reader :repos
+
+  def self.find(username)
+    self.new(username)
+  end
 
   def initialize(username)
     @username = username
-    @profile = OpenStruct.new(Util.get_response("users/#{@username}"))
-    @public_repos = Util.get_response("users/#{@username}/repos").sort_by { |repo| repo["watchers"].to_i }.reverse.map { |repo| OpenStruct.new repo }
+    @repos = get_user_repos
+    create_methods
   end
 
-  def view_profile
-    View.display_profile(@profile, @public_repos)
+  def create_methods
+    profile = Util.get_response("users/#{@username}")
+    profile.each { |key, value| define_singleton_method key.to_sym, -> { value } }
+  end
+
+  def get_user_repos
+    repos = Util.get_response("users/#{@username}/repos").map { |data| Repo.new(data) }
+    repos.sort_by(&:watchers).reverse
   end
 end
-
