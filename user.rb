@@ -20,7 +20,9 @@ class User
   end
 
   def get_user_repos
-    repos = Util.get_response("users/#{@username}/repos").map { |data| Repo.new(data) }
+    repos = Util.get_response("users/#{@username}/repos").map do |data|
+      Repo.new(@username, data)
+    end
     repos.sort_by(&:watchers).reverse
   end
 end

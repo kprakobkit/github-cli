@@ -7,5 +7,14 @@ module View
       puts "    *  #{repo.name} (#{repo.watchers} watchers)"
     end
   end
+
+  def self.display_repo(user, repo)
+    puts "Name: #{user.name}"
+    puts "Location: #{user.location}"
+    puts "Repository: #{repo.name}"
+    repo.events.each do |event|
+      puts "    *  #{event["type"][0..-6]}ed by #{event["actor"]["login"]}"
+    end
+  end
 end
 
